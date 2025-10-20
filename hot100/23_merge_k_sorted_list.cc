@@ -148,7 +148,6 @@ public:
         }
         ListNode *ans = dummy->next;
         delete dummy;
-        
         return ans;
     }
 };
