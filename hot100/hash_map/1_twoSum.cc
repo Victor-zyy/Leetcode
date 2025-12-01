@@ -3,6 +3,11 @@
 #include <iostream>
 #include <algorithm>
 using namespace std;
+
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
 // method 1. hash table [key,value] [key = nums[i], value = index of vector]
 // method 2. two pointers nope, the question of return the index of two, but when sorted the vector, index disappear
 
@@ -96,13 +101,46 @@ operator << (ostream &os, const vector<int>& v)
   return os << "} ";
 }
 
+#elif SECOND_TIME
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+      unordered_map<int, int> _map;     
+      for(int i = 0; i < nums.size(); i++ ){
+        _map[nums[i]] = i;
+      }
+      vector<int> ans;
+      for(int i = 0; i < nums.size(); i++ ){
+        auto it = _map.find(target - nums[i] );
+        if( it != _map.end() && it->second != i ){
+          ans.emplace_back(i);
+          ans.emplace_back(_map[target - nums[i]]);
+          break;
+        }
+      }
+      return ans;
+    }
+};
+
+// improvement --- we don't construct the hashtable at once, we build it when iterate
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+      unordered_map<int, int> _map;     
+      for(int i = 0; i < nums.size(); i++ ){
+        auto it = _map.find(target - nums[i] );
+        if( it != _map.end() ){
+          return {it->second, i};
+        }
+        _map[nums[i]] = i;
+      }
+      return {};
+    }
+};
+
+#endif
+
 int main(){
-  Solution solve;
-  vector<int> test {-1,0,1,2,-1,-4};
-  cout << test << endl;
-  vector<int> ans = solve.twoSum(test, 3);
-  for(auto &it : ans)
-    cout << it << " ";
-  cout << endl;
-  return 0;
 }

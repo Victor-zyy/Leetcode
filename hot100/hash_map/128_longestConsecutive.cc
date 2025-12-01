@@ -4,6 +4,13 @@
 #include <iostream>
 #include <algorithm>
 using namespace std;
+
+
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
+
 /*
 Example 1:
 
@@ -96,26 +103,68 @@ operator << (ostream &os, const vector<string>& v)
     os << it << ' ';
   return os << "} ";
 }
+
+#elif SECOND_TIME
+
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+      int longest = 1;    
+      int n = nums.size();
+      if( n == 0 )  return 0;
+
+      unordered_set<int> _set;
+      for(const auto &num : nums){
+        _set.emplace(num);
+      }
+      unordered_map<int, int> _map;
+      sort(nums.begin(), nums.end());
+      for(int i = 0; i < n; i++ ){
+        if( _set.count(nums[i] - 1) ){
+          _map[nums[i]] = _map[nums[i] - 1] + 1;
+          if( _map[nums[i]] > longest ){
+            longest = _map[nums[i]];
+          }
+        }else{
+          _map[nums[i]] = 1;
+        }
+      }
+      return longest;
+    }
+};
+
+// improvement
+
+class Solution {
+public:
+    int longestConsecutive(vector<int>& nums) {
+        unordered_set<int> num_set;
+        for (const int& num : nums) {
+            num_set.insert(num);
+        }
+
+        int longestStreak = 0;
+
+        for (const int& num : num_set) {
+            if (!num_set.count(num - 1)) {
+                int currentNum = num;
+                int currentStreak = 1;
+
+                while (num_set.count(currentNum + 1)) {
+                    currentNum += 1;
+                    currentStreak += 1;
+                }
+
+                longestStreak = max(longestStreak, currentStreak);
+            }
+        }
+
+        return longestStreak;           
+    }
+};
+
+#endif
+
 int main(){
-  Solution solve;
-  vector<int> test {0,3,7,2,5,8,4,6,0,1};
-  cout << test << endl;
-  int ans = solve.longestConsecutive(test);
-  cout << ans << endl;
-  // test case
-  unordered_set<int> set_;
-  set_.emplace(4);
-  set_.emplace(8);
-  set_.emplace(9);
-  set_.emplace(1);
-  set_.emplace(1);
-  set_.emplace(1);
-  set_.emplace(1);
-  set_.emplace(1);
-  set_.emplace(5);
-  for(auto &val : set_)
-    cout << "set_ : " << val << endl;
-  cout << set_.count(1) << endl;
-  cout << set_.count(5) << endl;
   return 0;
 }
