@@ -3,6 +3,11 @@
 #include <algorithm>
 
 using namespace std;
+
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
 class Solution{
 public:
     int maxArea(vector<int>& height) {
@@ -122,4 +127,45 @@ int main(){
   cout << test << endl;
   cout << "maxArea : " << solve.maxArea(test) << endl;
   return 0;
+}
+
+#elif SECOND_TIME
+
+#define METHOD1   1
+#define METHOD2   0
+
+#if METHOD1
+/**
+ * METHOD1: Double Pointer   A little bit greedy algorithem
+ */
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+      int left = 0, right = height.size() - 1; 
+      int maxarea = 0;
+      while (left < right)
+      {
+          auto temp_area = ( right - left ) * min(height[left], height[right]);
+          maxarea = maxarea < temp_area ? temp_area : maxarea;
+          if (height[left] < height[right]){
+              left++;
+          }else{
+              right--;
+          }
+      }
+      return maxarea;
+    }
+};
+#elif METHOD2
+
+#endif
+
+
+#endif
+
+
+int main(){
+  Solution mysolve;
+  vector<int> height = {1,8,6,2,5,4,8,3,7};
+  mysolve.maxArea(height);
 }

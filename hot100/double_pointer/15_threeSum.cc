@@ -1,9 +1,14 @@
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <iostream>
 #include <algorithm>
 
+#define FIRST_TIME 0
+#define SECOND_TIME 1
 using namespace std;
+
+#if FIRST_TIME
 /*
 Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
 Notice that the solution set must not contain duplicate triplets.
@@ -59,21 +64,6 @@ public:
       return ans;
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #if 0
 class Solution {
@@ -131,4 +121,57 @@ int main(){
   for(auto &it : ans)
     cout << it << endl;
   return 0;
+}
+
+#elif SECOND_TIME
+
+class Solution {
+public:
+	// -nums[i] = nums[j] + nums[k]
+	// to let no duplicate use set
+    vector<vector<int>> threeSum(vector<int>& nums) {
+		sort(nums.begin(), nums.end());
+		int first = 0;
+		vector<vector<int>> ans;
+
+		for (int first = 0; first < nums.size(); first++)
+		{
+			if ( first > 0 && nums[first] == nums[first - 1] ){
+				continue;
+			}
+			int third = nums.size() - 1;
+			int target = -nums[first];
+			for (int second = first + 1 ; second < nums.size(); second++)
+			{
+				if ( second > first + 1 && nums[second] == nums[second - 1] ){
+					continue;
+				}
+
+				while ( second < third && nums[second] + nums[third] > target )
+				{
+					--third;
+				}
+
+				if ( second == third ) break;
+
+				if ( nums[third] + nums[second] == target ){
+					ans.push_back({nums[first], nums[second], nums[third]});
+				}
+				
+			}
+			
+		}
+		return ans;
+    }
+};
+
+
+#endif
+
+
+int main()
+{
+	Solution mysolve;
+	vector<int> nums = {-1,0,1,2,-1,-4};
+	mysolve.threeSum(nums);
 }

@@ -2,6 +2,10 @@
 #include <iostream>
 using namespace std;
 
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FISRT_TIME
 /*
 Given an integer array nums, move all 0's to the end of it while maintaining the relative order of the non-zero elements.
 
@@ -130,4 +134,61 @@ int main(){
   solve.moveZeroes(test);
   cout << test << endl;
   return 0;
+}
+
+#elif SECOND_TIME
+
+/**
+ * Double Pointer thinking: which pos do left and right pointers point to.
+ */
+#if 0
+class Solution {
+public:
+    void moveZeroes(vector<int>& nums) {
+      int slow = 0;
+      if (nums.size() < 2 ) return;
+      int fast = 1;
+      while ( fast < nums.size() )
+      {
+          if( nums[slow] == 0 ){
+            while ( nums[fast] == 0 )
+            {
+                fast ++;
+                if ( fast >= nums.size() ){
+                  break;
+                }
+            }
+            if ( fast < nums.size() ){
+                swap(nums[slow], nums[fast]);
+            }
+          }
+          fast++;
+          slow++;
+      }
+    }
+};
+#endif
+
+class Solution {
+public:
+    void moveZeroes(vector<int>& nums) {
+        int left = 0; int right = 0;
+        while ( right < nums.size() )
+        {
+            if (nums[right]) {
+              swap(nums[right], nums[left]);
+              left++;
+            }
+            right++;
+        }
+        
+    }
+};
+#endif
+
+
+int main() {
+  Solution mysolve;
+  vector<int> nums = {0, 1, 0, 3, 2};
+  mysolve.moveZeroes(nums);
 }
