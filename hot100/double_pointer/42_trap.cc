@@ -5,6 +5,10 @@
 #include <stack>
 
 using namespace std;
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
 /*
 Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.
 Input: height = [0,1,0,2,1,0,1,3,2,1,2,1]
@@ -143,3 +147,100 @@ int main(){
     cout << it << endl;
   return 0;
 }
+
+
+#elif SECOND_TIME
+
+class Solution {
+public:
+    int trap(vector<int>& height) {
+		int area = 0;
+		int leftmax = 0;
+		int rightmax = 0;
+		int left = 0;
+		int right = height.size() - 1;
+
+		while (left < right)
+		{
+			leftmax = max(leftmax, height[left]);
+			rightmax = max(rightmax, height[right]);
+			if (height[left] < height[right]){
+				area += leftmax - height[left];
+				left++;
+			} else if (height[left] > height[right]){
+				area += rightmax - height[right];
+				right--;
+			} else {
+				// 2 0 2 you must and should only move one pointer at one time
+				area += leftmax - height[left];
+				//area += rightmax - height[right];
+				left++;
+				//right--;
+			}
+		}
+		return area;
+	}
+};
+
+
+/**
+ * Use mon stack
+ */
+class Solution {
+public:
+    int trap(vector<int>& height) {
+		stack<int> stk;
+		int n  = height.size();
+		int area = 0;
+		for (int i = 0; i < n; i++)
+		{
+			while (!stk.empty() && height[i] > height[stk.top()])
+			{
+				int top = stk.top();
+				stk.pop();
+				if (stk.empty()) break; // left top i ---- which seems like 
+
+				int left = stk.top();
+				int curwid = i - left - 1;
+				int curheight = min(height[left], height[i]) - height[top];
+				area += curwid * curheight;
+			}
+			stk.push(i);
+		}
+		return area;
+	}
+};
+/** Use Dynamic Programming Thinking */
+
+class Solution {
+public:
+    int trap(vector<int>& height) {
+		int area = 0;
+		vector<int> leftmax(height.size());
+		vector<int> rightmax(height.size());
+		int n = height.size();
+		for (int i = 1; i < n; i++)
+		{
+			leftmax[i] = max(leftmax[i-1], height[i]);
+		}
+		rightmax[n-1] = height[n-1];
+		for (int i = n - 2; i >= 0; i-- )
+		{
+			rightmax[i] = max(rightmax[i + 1], height[i]);		
+		}
+
+		for (int i = 0; i < height.size(); i++)
+		{
+			area += min(leftmax[i], rightmax[i]) - height[i];
+		}
+		
+		return area;
+	}
+};
+int main()
+{
+	Solution mysolve;
+	vector<int> height = {0,1,0,2,1,0,1,3,2,1,2,1};
+	mysolve.trap(height);
+}
+#endif
