@@ -5,6 +5,10 @@
 #include <algorithm>
 
 using namespace std;
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
 /*
 Given two strings s and p, return an array of all the start indices of p's
 in s. You may return the answer in any order.
@@ -203,3 +207,154 @@ int main(){
   cout << hex<<static_cast<int>(s[5]) << endl;
   return 0;
 }
+
+#elif SECOND_TIME
+
+#include <unordered_set>
+
+#define METHOD1 0
+#define METHOD2 0
+#define METHOD3 1
+
+#if METHOD1
+/**
+ * Execeed the time limit
+ */
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        int n = p.size();         
+        sort(p.begin(),p.end());
+        vector<int> ans; 
+        int w_l = 0;
+        int w_r = 0;
+        for (int i = 0; i < s.size(); i++)
+        {
+            string t_s = s.substr(i, n);
+            sort(t_s.begin(), t_s.end());
+            if (t_s.size() != p.size()) {
+                break;
+            } else {
+                int j;
+                for (j = 0; j < p.size(); j++)
+                {
+                    if (t_s[j] != p[j]) break;
+                }
+                if (j == p.size()){
+                    ans.emplace_back(i);
+                }
+            }
+        }
+        return ans;
+    }
+};
+#elif METHOD2
+
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        int slen = s.size();
+        int plen = p.size();
+        
+        if (slen < plen ) return {};
+
+        vector<int> sCount(26);
+        vector<int> pCount(26);
+        vector<int> ans;
+
+        for (int i = 0; i < plen; i++)
+        {
+            sCount[s[i] - 'a']++;
+            pCount[p[i] - 'a']++;
+        }
+
+        if (sCount == pCount)
+        {
+            ans.emplace_back(0);
+        }
+        
+        for (int i = 0; i < slen - plen; i++)
+        {
+            --sCount[s[i] - 'a'];
+            ++sCount[s[i+plen] - 'a']; // need to be considered a slide window
+            if (sCount == pCount){
+                ans.emplace_back(i + 1);
+            }
+        }
+        return ans;
+    }
+};
+
+#elif METHOD3
+
+/**
+ * OPTIMIZATION of Slide window space complexity
+ */
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        int slen = s.size();
+        int plen = p.size();
+        if (slen < plen)
+        {
+            return {};
+        }
+
+        vector<int> count(26);
+        vector<int> ans;
+        int diff = 0;
+
+        for (int i = 0; i < plen; i++)
+        {
+            ++count[s[i] - 'a'];
+            --count[p[i] - 'a'];
+        }
+
+        for (int i = 0; i < 26; i++)
+        {
+            if (count[i] != 0){
+                diff++;
+            }
+        }
+        
+        if (diff == 0) ans.emplace_back(0);
+        
+        for (int i = 0; i < slen - plen; i++)
+        {
+            if (count[s[i] - 'a'] == 1){
+                --diff;
+            } else if (count[s[i] - 'a'] == 0)
+            {
+                ++diff;
+            }
+            --count[s[i] - 'a']; 
+
+            if (count[s[i + plen] -'a' ]  == -1){
+                --diff;
+            } else if (count[s[i + plen] - 'a' ]  == 0)
+            {
+                ++diff;
+            }
+            
+            ++count[s[i + plen] - 'a'];
+
+            if (diff == 0) {
+                ans.emplace_back(i + 1);
+            }
+        }
+        return ans;
+    }
+};
+#endif
+
+
+int main()
+{
+
+    Solution mysolve;
+    string s = "cbaebabacd";
+    string p = "abc";
+    mysolve.findAnagrams(s, p);
+}
+
+#endif

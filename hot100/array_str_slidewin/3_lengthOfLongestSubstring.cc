@@ -5,6 +5,11 @@
 #include <algorithm>
 
 using namespace std;
+
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
 /*
 Given a string s, find the length of the longest
 without duplicate characters.
@@ -116,3 +121,87 @@ int main(){
   cout << "LongestSubstring of \" " << s5 << " \"  " << solve.lengthOfLongestSubstring(s5) << endl;
   return 0;
 }
+
+#elif SECOND_TIME
+
+#define METHOD1 0
+#define METHOD2 1
+#if METHOD1
+/**
+ * METHOD1: unorded_map + slidewindow
+ */
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int maxlen = 0;     
+        int w_l = 0;
+        int w_r = 0;
+        unordered_map<char, int> _map;
+        for (int i = 0; i < s.size(); i++)
+        {
+            if (_map.empty()){
+                w_r++;
+                _map[s[i]] = i;
+                maxlen = max(maxlen, w_r - w_l);
+                continue;
+            }
+
+            if(_map.count(s[i])){
+                int temp = w_l;
+                while (temp < _map[s[i]])
+                {
+                    _map.erase(s[temp]);
+                    temp++;
+                }
+                
+                w_l = _map[s[i]] + 1; 
+                _map.erase(s[i]);
+                _map[s[i]] = i;
+                w_r++;
+            } else {
+                w_r ++;
+                _map[s[i]] = i;
+            }
+            maxlen = max(maxlen, w_r - w_l);
+        }
+        return maxlen;
+    }
+};
+#elif METHOD2
+
+#include <unordered_set>
+
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int maxlen = 0;
+        unordered_set<int> occ;
+        int rk = -1;
+        for (int i = 0; i < s.size(); i++)
+        {
+            if (i != 0) {
+                occ.erase(s[i - 1]);
+            }
+
+            // need to be concerned rk is integer and s.size is s_size
+            while (rk + 1 < s.size() && !occ.count(s[rk + 1]))
+            {
+                rk++;
+                occ.insert(s[rk]);
+            }
+            maxlen = max(maxlen, rk - i + 1);
+        }
+        return maxlen;
+    }
+};
+#endif
+
+int main()
+{
+    Solution mysolve;
+    string s = "abba";
+    string s1 = " ";
+    mysolve.lengthOfLongestSubstring(s);
+    mysolve.lengthOfLongestSubstring(s1);
+}
+#endif
