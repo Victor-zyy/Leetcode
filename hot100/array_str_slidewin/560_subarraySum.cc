@@ -5,6 +5,10 @@
 #include <algorithm>
 
 using namespace std;
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
 class Solution {
 public:
     int subarraySum(vector<int>& nums, int k) {
@@ -111,3 +115,63 @@ int main(){
   cout << nums << " k " << 3 << " count  " << solve.subarraySum(nums, 3) << endl;
   return 0;
 }
+
+#elif SECOND_TIME
+
+#define METHOD1 0
+#define METHOD2 1
+
+#if METHOD1
+/**
+ * METHOD1: for-loop O(n^2)
+ */
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        int ans = 0;
+        for (int i = 0; i < nums.size(); i++)
+        {
+            int sum = nums[i];
+            if (sum == k){
+                ans++;
+            }
+            for (int j = i + 1; j < nums.size(); j++)
+            {
+                sum += nums[j];
+                if (sum == k){
+                    ans++;
+                } 
+            }
+        }
+
+        return ans;
+    }
+};
+
+#elif METHOD2
+/**
+ * METHOD2: prefix sum and Hashmap to optimize the code
+ */
+
+class Solution {
+public:
+    int subarraySum(vector<int>& nums, int k) {
+        // prefix sum + hashmap
+        unordered_map<int, int> mp; // <prefix-sum, integer>
+        mp[0] = 1;
+        int ans = 0;
+        int pre = 0;
+        for (auto & x: nums)
+        {
+            pre += x;
+            if (mp.find(pre - k) != mp.end()){
+                ans += mp[pre - k];
+            }
+            mp[pre]++;
+        }
+        return ans;
+    }
+};
+#endif
+
+#endif

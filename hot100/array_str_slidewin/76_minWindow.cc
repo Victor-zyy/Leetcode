@@ -5,6 +5,11 @@
 #include <algorithm>
 
 using namespace std;
+
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
 class Solution {
 public:
     string minWindow(string s, string t) {
@@ -169,3 +174,56 @@ int main(){
   cout << p1.substr(0, p1.size()) << endl;
   return 0;
 }
+#elif SECOND_TIME
+
+class Solution {
+public:
+	unordered_map<char, int> ori, cnt;
+	bool check(){
+		for (const auto& p: ori)
+		{
+			if (cnt[p.first] < p.second) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+    string minWindow(string s, string t) {
+		int m = s.size();
+		int n = t.size();
+		
+
+		for (const auto &c : t)
+		{
+			++ori[c];
+		}
+
+		int l = 0; int r = -1;
+		int len = __INT_MAX__; int ansL = -1;
+
+		while (r < int(s.size()))
+		{
+			if (ori.find(s[++r]) != ori.end()) {
+				cnt[s[r]]++;
+			}
+
+			while (check() && l <= r ) // why l <= r
+			{
+				if (r -l + 1 < len){
+					len = r - l + 1;
+					ansL = l;
+				}
+
+				if (ori.find(s[l]) != ori.end()) {
+					--cnt[s[l]];
+				}
+				++l;
+			}
+		}
+
+		return ansL == -1 ? string() : s.substr(ansL, len);
+    }
+};
+
+#endif

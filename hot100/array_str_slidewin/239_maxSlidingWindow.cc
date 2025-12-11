@@ -7,6 +7,10 @@
 #include <algorithm>
 
 using namespace std;
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+#if FIRST_TIME
 class Solution {
 public:
     vector<int> maxSlidingWindow(vector<int>& nums, int k) {
@@ -175,3 +179,125 @@ int main(){
   cout << v2 << " max slide : " << solve.maxSlidingWindow(v2, 1) << endl;
   return 0;
 }
+
+#elif SECOND_TIME
+
+#define METHOD1 0
+#define METHOD2 0
+#define METHOD3 1
+
+#if METHOD1
+/**
+ * METHOD1: max heapify --- priority queue
+ */
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        priority_queue<pair<int,int>> max_q;
+        for (int i = 0; i < k; i++)
+        {
+            max_q.emplace(nums[i], i);
+        }
+        
+        vector<int> ans {max_q.top().first};
+
+        for (int i = k; i < nums.size(); i++)
+        {
+            max_q.emplace(nums[i], i);
+            while (max_q.top().second <= i - k) // the maximum value may be not present in the priority queue
+            {
+                max_q.pop();
+            }
+            ans.emplace_back(max_q.top().first); 
+        }
+        return ans; 
+    }
+};
+#elif METHOD2
+
+/**
+ * METHOD2: monotonic queue
+ */
+
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        int n = nums.size();
+        deque<int> q;
+        for (int i = 0; i < k; i++)
+        {
+            while (!q.empty() && nums[i] >= nums[q.back()])
+            {
+                q.pop_back();
+            }
+            q.push_back(i); 
+        }
+        
+        vector<int> ans = {nums[q.front()]};
+        for (int i = k; i < nums.size(); i++)
+        {
+            while (!q.empty() && nums[i] >= nums[q.back()])
+            {
+                q.pop_back();
+            }
+            q.push_back(i); 
+            while (!q.empty() && q.front() <= i - k)
+            {
+                q.pop_front();
+            }
+            ans.emplace_back(nums[q.front()]);
+        }
+        return ans;
+    }
+};
+#elif METHOD3
+
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        vector<int> ans;
+        int n = nums.size();
+        vector<int> prefix(n); // when you refer to the vector value you need to allocate space first
+        vector<int> suffix(n);
+
+        prefix[0] = nums[0];
+        for (int i = 1; i < n; i++)
+        {
+            if (i % k == 0)
+            {
+                prefix[i] = nums[i];
+            } else {
+                prefix[i] = max(prefix[i - 1], nums[i]);
+            }
+            
+        }
+        suffix[n - 1] = nums[n - 1];
+        for (int i = n - 2; i >= 0 ; i--)
+        {
+            if ((i + 1) % k == 0) // need to be handed i + 1
+            {
+                suffix[i] = nums[i];
+            } else {
+                suffix[i] = max(prefix[i + 1], nums[i]);
+            }
+        }
+
+        for (int i = 0; i < nums.size() - k + 1; i++)
+        {
+            ans.emplace_back(max(suffix[i], prefix[i + k - 1]));
+        }
+        
+        return ans;
+    }
+};
+#endif
+
+int main()
+{
+    Solution mysolve;
+    vector<int> nums = {1,3,-1,-3,5,3,6,7};
+    int k = 3;
+    mysolve.maxSlidingWindow(nums, k);
+}
+
+#endif
