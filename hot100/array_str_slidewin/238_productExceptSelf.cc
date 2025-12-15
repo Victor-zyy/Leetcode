@@ -7,6 +7,11 @@
 #include <numeric>
 using namespace std;
 
+#define FIRST_TIME 0
+#define SECOND_TIME 1
+
+
+#if FIRST_TIME
 ostream&
 operator << (ostream &os, const vector<int>& v);
 /*
@@ -90,3 +95,67 @@ int main(){
   cout << v1 << endl;
   return 0;
 }
+
+#elif SECOND_TIME
+
+#define METHOD1 0
+#define METHOD2 1
+
+#if METHOD1
+/**
+ * METHOD1: No division and O(n) time complexity and O(1) space complexity
+ */
+
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+        vector<int> L(nums.size(), 0), R(nums.size(), 0); 
+        vector<int> ans(nums.size(), 0);
+        L[0] = 1;
+
+        for (int i = 1; i < nums.size(); i++)
+        {
+            L[i] = L[i - 1] * nums[i - 1];
+        }
+
+        R[nums.size() - 1] = 1;
+        
+        for (int i = nums.size() - 2; i >= 0; i--)
+        {
+            R[i] = R[ i + 1] * nums[i + 1];
+        }
+
+        for (int i = 0; i < nums.size(); i++)
+        {
+            ans[i] = L[i] * R[i];
+        }
+        return ans;
+    }
+};
+#elif METHOD2
+
+class Solution {
+public:
+    vector<int> productExceptSelf(vector<int>& nums) {
+        vector<int> ans(nums.size(), 0);
+
+        ans[0] = 1;
+        for (int i = 1; i < nums.size(); i++)
+        {
+            ans[i] = ans[i - 1] * nums[i - 1];
+        }
+        
+        int R = 1;
+        
+        for (int i = nums.size() - 1; i >= 0; i--)
+        {
+            ans[i] = ans[i] * R;
+            R *= nums[i];
+        }
+        return ans;
+    }
+};
+
+#endif
+
+#endif
